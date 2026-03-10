@@ -27,7 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
         Payment payment = new Payment(order.getId(), method, paymentData);
 
-        if (PaymentMethod.VOUCHERCODE.getValue().equals(method)) {
+        if (PaymentMethod.VOUCHERCODE.getValue().equals(method) || PaymentMethod.VOUCHERCODE.name().equals(method)) {
             String voucherCode = paymentData.get("voucherCode");
             if (voucherCode != null && isValidVoucherCode(voucherCode)) {
                 payment.setPaymentStatus(PaymentStatus.SUCCESS.getValue());
@@ -35,7 +35,16 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setPaymentStatus(PaymentStatus.REJECTED.getValue());
             }
         }
-
+        else if (PaymentMethod.BANKTRANSFER.getValue().equals(method) || PaymentMethod.BANKTRANSFER.name().equals(method)) {
+            String bankName = paymentData.get("bankName");
+            String referenceCode = paymentData.get("referenceCode");
+            if (bankName == null || bankName.trim().isEmpty() ||
+                    referenceCode == null || referenceCode.trim().isEmpty()) {
+                payment.setPaymentStatus(PaymentStatus.REJECTED.getValue());
+            } else {
+                payment.setPaymentStatus(PaymentStatus.SUCCESS.getValue());
+            }
+        }
         return paymentRepository.add(payment);
     }
 
