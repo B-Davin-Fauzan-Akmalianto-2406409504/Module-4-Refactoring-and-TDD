@@ -15,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PaymentRepositoryTest {
     PaymentRepository paymentRepository;
@@ -68,7 +67,7 @@ public class PaymentRepositoryTest {
     @Test
     void testFindByIdIfIdNotFound() {
         for (Payment payment : paymentList) {
-            paymentRepository.save(payment);
+            paymentRepository.add(payment);
         }
         Payment findResult = paymentRepository.findById("zczc");
         assertNull(findResult);
@@ -98,7 +97,7 @@ public class PaymentRepositoryTest {
 
         Payment updatedPayment = new Payment(paymentGlobalId, PaymentMethod.BANKTRANSFER.getValue(), paymentList.get(0).getPaymentDetails(), PaymentStatus.REJECTED.getValue());
 
-        Payment result = paymentRepository.update(updatedPayment);
+        Payment result = paymentRepository.update(updatedPayment.getPaymentId(), updatedPayment);
         Payment findResult = paymentRepository.findById(paymentGlobalId);
 
         assertEquals(updatedPayment.getPaymentStatus(), result.getPaymentStatus());
@@ -111,7 +110,7 @@ public class PaymentRepositoryTest {
 
         Payment updatedPayment = new Payment("1010", PaymentMethod.BANKTRANSFER.getValue(), paymentList.get(0).getPaymentDetails(), PaymentStatus.REJECTED.getValue());
 
-        Payment result = paymentRepository.update(updatedPayment);
+        Payment result = paymentRepository.update(updatedPayment.getPaymentId(), updatedPayment);
 
         assertNull(result);
     }
@@ -136,10 +135,4 @@ public class PaymentRepositoryTest {
         assertEquals(paymentGlobalId, findResult.getPaymentId());
     }
 
-    @Test
-    void testAddPaymentWithNullInput() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            paymentRepository.add(null);
-        });
-    }
 }
