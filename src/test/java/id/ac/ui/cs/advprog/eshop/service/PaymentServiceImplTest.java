@@ -148,36 +148,101 @@ class PaymentServiceImplTest {
 
         assertNotNull(result);
         assertEquals(PaymentMethod.VOUCHERCODE.getValue(), result.getPaymentMethod());
-        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getPaymentStatus()); // Harus SUCCESS
+        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getPaymentStatus());
     }
 
     @Test
     void testAddPaymentVoucherCodeInvalidLength() {
         Map<String, String> paymentDataInvalidLength = new HashMap<>();
-        paymentDataInvalidLength.put("voucherCode", "ESHOP1234ABC567"); // 15 Karakter
+        paymentDataInvalidLength.put("voucherCode", "ESHOP1234ABC567");
 
         when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentDataInvalidLength);
 
-        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus());
     }
 
     @Test
     void testAddPaymentVoucherCodeInvalidPrefix() {
         Map<String, String> paymentDataInvalidPrefix = new HashMap<>();
-        paymentDataInvalidPrefix.put("voucherCode", "TSHOP1234ABC5678"); // Tidak diawali ESHOP
+        paymentDataInvalidPrefix.put("voucherCode", "TSHOP1234ABC5678");
         when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentDataInvalidPrefix);
-        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus());
     }
 
     @Test
     void testAddPaymentVoucherCodeInvalidNumericalCount() {
         Map<String, String> paymentDataInvalidNum = new HashMap<>();
-        paymentDataInvalidNum.put("voucherCode", "ESHOP123ABCDEFGH"); // Hanya 3 angka
+        paymentDataInvalidNum.put("voucherCode", "ESHOP123ABCDEFGH");
         when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
         Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentDataInvalidNum);
-        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus());
+    }
+
+    @Test
+    void testAddPaymentBankTransferValid() {
+        Map<String, String> paymentDataValid = new HashMap<>();
+        paymentDataValid.put("bankName", "Bank Negara Indonesia");
+        paymentDataValid.put("referenceCode", "REF1234567890");
+
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Payment result = paymentService.addPayment(order, PaymentMethod.BANKTRANSFER.getValue(), paymentDataValid);
+
+        assertNotNull(result);
+        assertEquals(PaymentMethod.BANKTRANSFER.getValue(), result.getPaymentMethod());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getPaymentStatus());
+    }
+
+    @Test
+    void testAddPaymentBankTransferInvalidBankNameEmpty() {
+        Map<String, String> paymentDataInvalid = new HashMap<>();
+        paymentDataInvalid.put("bankName", ""); // Empty string
+        paymentDataInvalid.put("referenceCode", "REF1234567890");
+
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Payment result = paymentService.addPayment(order, PaymentMethod.BANKTRANSFER.getValue(), paymentDataInvalid);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus());
+    }
+
+    @Test
+    void testAddPaymentBankTransferInvalidBankNameNull() {
+        Map<String, String> paymentDataInvalid = new HashMap<>();
+        paymentDataInvalid.put("referenceCode", "REF1234567890");
+
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Payment result = paymentService.addPayment(order, PaymentMethod.BANKTRANSFER.getValue(), paymentDataInvalid);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus());
+    }
+
+    @Test
+    void testAddPaymentBankTransferInvalidReferenceCodeEmpty() {
+        Map<String, String> paymentDataInvalid = new HashMap<>();
+        paymentDataInvalid.put("bankName", "Bank BCA");
+        paymentDataInvalid.put("referenceCode", "");
+
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Payment result = paymentService.addPayment(order, PaymentMethod.BANKTRANSFER.getValue(), paymentDataInvalid);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus());
+    }
+
+    @Test
+    void testAddPaymentBankTransferInvalidReferenceCodeNull() {
+        Map<String, String> paymentDataInvalid = new HashMap<>();
+        paymentDataInvalid.put("bankName", "Bank BCA");
+
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Payment result = paymentService.addPayment(order, PaymentMethod.BANKTRANSFER.getValue(), paymentDataInvalid);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus());
     }
 }
