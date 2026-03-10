@@ -36,34 +36,35 @@ public class PaymentServiceImpl implements PaymentService {
             }
         }
         else if (PaymentMethod.BANKTRANSFER.getValue().equals(method) || PaymentMethod.BANKTRANSFER.name().equals(method)) {
-            String bankName = paymentData.get("bankName");
-            String referenceCode = paymentData.get("referenceCode");
-            if (bankName == null || bankName.trim().isEmpty() ||
-                    referenceCode == null || referenceCode.trim().isEmpty()) {
-                payment.setPaymentStatus(PaymentStatus.REJECTED.getValue());
-            } else {
+            if (isValidBankTransfer(paymentData)) {
                 payment.setPaymentStatus(PaymentStatus.SUCCESS.getValue());
+            } else {
+                payment.setPaymentStatus(PaymentStatus.REJECTED.getValue());
             }
         }
         return paymentRepository.add(payment);
+    }
+
+    private boolean isValidBankTransfer(Map<String, String> paymentData) {
+        String bankName = paymentData.get("bankName");
+        String referenceCode = paymentData.get("referenceCode");
+
+        return bankName != null && !bankName.trim().isEmpty() && referenceCode != null && !referenceCode.trim().isEmpty();
     }
 
     private boolean isValidVoucherCode(String voucherCode) {
         if (voucherCode.length() != 16) {
             return false;
         }
-
         if (!voucherCode.startsWith("ESHOP")) {
             return false;
         }
-
         int numCount = 0;
         for (char c : voucherCode.toCharArray()) {
             if (Character.isDigit(c)) {
                 numCount++;
             }
         }
-
         return numCount == 8;
     }
 
