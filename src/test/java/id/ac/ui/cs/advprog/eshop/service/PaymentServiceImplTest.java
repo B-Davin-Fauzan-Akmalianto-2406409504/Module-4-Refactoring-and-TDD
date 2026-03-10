@@ -135,4 +135,48 @@ class PaymentServiceImplTest {
         assertEquals(payment.getPaymentId(), result.getFirst().getPaymentId());
         verify(paymentRepository, times(1)).findAll();
     }
+
+    @Test
+    void testAddPaymentVoucherCodeValid() {
+        Map<String, String> paymentDataValid = new HashMap<>();
+        paymentDataValid.put("voucherCode", "ESHOP1234ABC5678");
+
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataValid);
+
+        assertNotNull(result);
+        assertEquals("VOUCHERCODE", result.getPaymentMethod());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getPaymentStatus()); // Harus SUCCESS
+    }
+
+    @Test
+    void testAddPaymentVoucherCodeInvalidLength() {
+        Map<String, String> paymentDataInvalidLength = new HashMap<>();
+        paymentDataInvalidLength.put("voucherCode", "ESHOP1234ABC567"); // 15 Karakter
+
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataInvalidLength);
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
+    }
+
+    @Test
+    void testAddPaymentVoucherCodeInvalidPrefix() {
+        Map<String, String> paymentDataInvalidPrefix = new HashMap<>();
+        paymentDataInvalidPrefix.put("voucherCode", "TSHOP1234ABC5678"); // Tidak diawali ESHOP
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataInvalidPrefix);
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
+    }
+
+    @Test
+    void testAddPaymentVoucherCodeInvalidNumericalCount() {
+        Map<String, String> paymentDataInvalidNum = new HashMap<>();
+        paymentDataInvalidNum.put("voucherCode", "ESHOP123ABCDEFGH"); // Hanya 3 angka
+        when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataInvalidNum);
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
+    }
 }
