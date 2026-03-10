@@ -7,12 +7,12 @@ import org.junit.jupiter.api.Test;
 
 public class PaymentTest {
     Payment payment;
-    UUID paymentGlobalId = UUID.fromString("eb558e9f-1c39-460e-8860-71af6af63bd6");
+    String paymentGlobalId = "123e4567-e89b-12d3-a456-426614174000";
 
     @BeforeEach
     void setUp() {
         this.payment = new Payment();
-        this.payment.setPaymentId(paymentGlobalId.toString());
+        this.payment.setPaymentId(paymentGlobalId);
         this.payment.setPaymentType("Bank Transfer");
         this.payment.setPaymentStatus("SUCCESS");
         Map<String, String> paymentDetails = new HashMap<>();
@@ -23,7 +23,7 @@ public class PaymentTest {
 
     @Test
     void testGetPaymentId() {
-        assertEquals(paymentGlobalId.toString(), this.payment.getPaymentId());
+        assertEquals(paymentGlobalId, this.payment.getPaymentId());
     }
     
     @Test
