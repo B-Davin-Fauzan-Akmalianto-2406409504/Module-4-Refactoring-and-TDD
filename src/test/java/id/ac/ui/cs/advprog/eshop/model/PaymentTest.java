@@ -15,14 +15,10 @@ public class PaymentTest {
 
     @BeforeEach
     void setUp() {
-        this.payment = new Payment();
-        this.payment.setPaymentId(paymentGlobalId);
-        this.payment.setPaymentType("Bank Transfer");
-        this.payment.setPaymentStatus(PaymentStatus.SUCCESS.getValue());
         Map<String, String> paymentDetails = new HashMap<>();
         paymentDetails.put("bankName", "BCA");
         paymentDetails.put("referenceCode", "INV-001");
-        this.payment.setPaymentDetails(paymentDetails);
+        this.payment = new Payment(paymentGlobalId, "Bank Transfer", paymentDetails, PaymentStatus.SUCCESS.getValue());
     }
 
     @Test
