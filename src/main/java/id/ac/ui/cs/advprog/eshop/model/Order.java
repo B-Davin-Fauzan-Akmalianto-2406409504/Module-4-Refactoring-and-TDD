@@ -1,5 +1,6 @@
 package id.ac.ui.cs.advprog.eshop.model;
 
+import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,20 +30,15 @@ public class Order {
     }
 
     public Order(String id, List<Product> products, long orderTime, String author, String status) {
-        String[] statusList = {"WAITING_PAYMENT", "FAILED", "SUCCESS", "CANCELLED"};
-        if (Arrays.stream(statusList).noneMatch(item -> item.equals(status))) {
-            throw new IllegalArgumentException();
-        } else {
-            this.status = status;
-        }
+        this(id, products, orderTime, author);
+        this.setStatus(status);
     }
 
     public void setStatus(String status) {
-        String[] statusList = {"WAITING_PAYMENT", "FAILED", "SUCCESS", "CANCELLED"};
-        if (Arrays.stream(statusList).noneMatch(item -> item.equals(status))) {
-            throw new IllegalArgumentException();
-        } else {
+        if (OrderStatus.contains(status)) {
             this.status = status;
+        } else {
+            throw new IllegalArgumentException();
         }
     }
 }
