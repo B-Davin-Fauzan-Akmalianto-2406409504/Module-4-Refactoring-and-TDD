@@ -25,7 +25,36 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
         Payment payment = new Payment(order.getId(), method, paymentData);
+
+        if ("VOUCHERCODE".equals(method)) {
+            String voucherCode = paymentData.get("voucherCode");
+            if (voucherCode != null && isValidVoucherCode(voucherCode)) {
+                payment.setPaymentStatus(PaymentStatus.SUCCESS.getValue());
+            } else {
+                payment.setPaymentStatus(PaymentStatus.REJECTED.getValue());
+            }
+        }
+
         return paymentRepository.add(payment);
+    }
+
+    private boolean isValidVoucherCode(String voucherCode) {
+        if (voucherCode.length() != 16) {
+            return false;
+        }
+
+        if (!voucherCode.startsWith("ESHOP")) {
+            return false;
+        }
+
+        int numCount = 0;
+        for (char c : voucherCode.toCharArray()) {
+            if (Character.isDigit(c)) {
+                numCount++;
+            }
+        }
+
+        return numCount == 8;
     }
 
     @Override
