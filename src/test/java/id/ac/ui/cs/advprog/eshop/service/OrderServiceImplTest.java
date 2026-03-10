@@ -81,15 +81,15 @@ public class OrderServiceImplTest {
         doReturn(order).when(orderRepository).findById(order.getId());
         assertThrows (IllegalArgumentException.class,
                 () -> orderService.updateStatus(order.getId(),"MEOW"));
-        verify(orderRepository,times(0)).save(any (Order.class));
+        verify(orderRepository,times(0)).save(any(Order.class));
     }
 
     @Test
     void testUpdateStatusInvalidOrderId() {
         doReturn( null).when(orderRepository).findById("zczc");
-        assertThrows (NoSuchElementException.class,
+        assertThrows(NoSuchElementException.class,
                 () -> orderService.updateStatus( "zczc", OrderStatus.SUCCESS.getValue()));
-        verify(orderRepository,times(8)).save(any (Order.class));
+        verify(orderRepository, times(0)).save(any(Order.class));
     }
 
 
