@@ -1,6 +1,7 @@
 package id.ac.ui.cs.advprog.eshop.service;
 
 import id.ac.ui.cs.advprog.eshop.enums.OrderStatus;
+import id.ac.ui.cs.advprog.eshop.enums.PaymentMethod;
 import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import id.ac.ui.cs.advprog.eshop.model.Order;
 import id.ac.ui.cs.advprog.eshop.model.Payment;
@@ -53,7 +54,7 @@ class PaymentServiceImplTest {
         paymentData = new HashMap<>();
         paymentData.put("voucherCode", "ESHOP1234ABC5678");
 
-        payment = new Payment(order.getId(), "VOUCHERCODE", paymentData);
+        payment = new Payment(order.getId(), PaymentMethod.VOUCHERCODE.getValue(), paymentData);
     }
 
     @Test
@@ -61,11 +62,11 @@ class PaymentServiceImplTest {
 
         when(paymentRepository.add(any(Payment.class))).thenReturn(payment);
 
-        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentData);
+        Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentData);
 
         assertNotNull(result);
         assertEquals(order.getId(), result.getPaymentId());
-        assertEquals("VOUCHERCODE", result.getPaymentMethod());
+        assertEquals(PaymentMethod.VOUCHERCODE.getValue(), result.getPaymentMethod());
         assertEquals(paymentData, result.getPaymentDetails());
         assertEquals(PaymentStatus.PENDING.getValue(), result.getPaymentStatus());
 
@@ -143,10 +144,10 @@ class PaymentServiceImplTest {
 
         when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataValid);
+        Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentDataValid);
 
         assertNotNull(result);
-        assertEquals("VOUCHERCODE", result.getPaymentMethod());
+        assertEquals(PaymentMethod.VOUCHERCODE.getValue(), result.getPaymentMethod());
         assertEquals(PaymentStatus.SUCCESS.getValue(), result.getPaymentStatus()); // Harus SUCCESS
     }
 
@@ -157,7 +158,7 @@ class PaymentServiceImplTest {
 
         when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataInvalidLength);
+        Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentDataInvalidLength);
 
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
     }
@@ -167,7 +168,7 @@ class PaymentServiceImplTest {
         Map<String, String> paymentDataInvalidPrefix = new HashMap<>();
         paymentDataInvalidPrefix.put("voucherCode", "TSHOP1234ABC5678"); // Tidak diawali ESHOP
         when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataInvalidPrefix);
+        Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentDataInvalidPrefix);
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
     }
 
@@ -176,7 +177,7 @@ class PaymentServiceImplTest {
         Map<String, String> paymentDataInvalidNum = new HashMap<>();
         paymentDataInvalidNum.put("voucherCode", "ESHOP123ABCDEFGH"); // Hanya 3 angka
         when(paymentRepository.add(any(Payment.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Payment result = paymentService.addPayment(order, "VOUCHERCODE", paymentDataInvalidNum);
+        Payment result = paymentService.addPayment(order, PaymentMethod.VOUCHERCODE.getValue(), paymentDataInvalidNum);
         assertEquals(PaymentStatus.REJECTED.getValue(), result.getPaymentStatus()); // Harus REJECTED
     }
 }
