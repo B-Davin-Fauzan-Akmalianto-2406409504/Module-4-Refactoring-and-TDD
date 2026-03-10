@@ -23,3 +23,19 @@
 - Sebuah principle yang mengatakan bahwa jangan menggunakan satu interface besar, namun gunakanlah interface masing-masing dengan skala yang lebih kecil supaya tidak ada fungsi redundant yang diimplementasikan di class yang tidak membutuhkannya. Disini, CarRepositoryInterface sudah terpisah dengan yang produk sehingga Car tidak perlu mengimplement fungsi Product, dan juga sebaliknya.
 ## DIP -- Dependency Inversion Principle
 - Sebuah principle yang mengatakan bahwa intinya modul Service tidak boleh bergantung ke Repository, melainkan harus bergantung ke Interface aja, agar ketika ingin ganti repo, Service tidak rusak dan perlu diganti. Disini, CarServiceImpl sudah depend ke CarRepositoryInterface.
+
+# Reflection -- Module 4
+- Unit test yang saya buat seharusnya sudah mencukupi lingkup fitur yang diminta oleh soal, dan edge cases sudah terpenuhi (seperti delete ketika id not found).
+- Saya yakin unit test yg saya buat sudah sangat sesuai untuk cases yang diperlukan, sehingga kalopun refactor saya tidak khawatir akan fail testnya (kecuali emang salah pas refactor)
+- Sejujurnya, saya tidak terlalu menyukai TDD ini, karena saya kurang terbayang apa saja test yang diperlukan ketika bahkan fungsinya dalam bentuk kode aja belum ada. Namun, saya mengerti kelebihan dari TDD ini, yaitu edge cases yang sebelumnya mungkin tidak terpikirkan ketika langsung bikin function akan langsung ke eliminasi, dan akan sangat membantu mengurangi bug ketika launch pertama kali. Jadi, mungkin kedepannya saat bikin test saya akan lebih melek terhadap edge cases.
+## F.I.R.S.T
+### Fast 
+- Unit test sudah berjalan dengan cepat, apalagi saya menggunakan @Mock sehingga tidak perlu input output ke db asli.
+### Independent
+- Setiap test berdiri sendiri dan tidak mempengaruhi test yang lain, karna ada BeforeEach setUp yang memastikan tiap test itu selalu ada setup yang tersedia.
+### Repeatable
+- Test menghasilkan output yang konsisten dan repeatable.
+### Self-Validating
+- Test memvalidasi dirinya sendiri melalui assertions seperti assertEquals dll.
+### Timely
+- Test dibuat sesuai ketentuan TDD, yaitu dibuat dulu sebelum kode aslinya dibuat, sebagai baseline untuk kode yang nanti ditulis.
