@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
+import id.ac.ui.cs.advprog.eshop.enums.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ public class PaymentTest {
         this.payment = new Payment();
         this.payment.setPaymentId(paymentGlobalId);
         this.payment.setPaymentType("Bank Transfer");
-        this.payment.setPaymentStatus("SUCCESS");
+        this.payment.setPaymentStatus(PaymentStatus.SUCCESS.getValue());
         Map<String, String> paymentDetails = new HashMap<>();
         paymentDetails.put("bankName", "BCA");
         paymentDetails.put("referenceCode", "INV-001");
@@ -36,6 +37,6 @@ public class PaymentTest {
 
     @Test
     void testGetPaymentStatus() {
-        assertEquals("SUCCESS", this.payment.getPaymentStatus());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), this.payment.getPaymentStatus());
     }
 }
